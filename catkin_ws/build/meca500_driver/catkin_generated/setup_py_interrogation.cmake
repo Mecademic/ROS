@@ -1,0 +1,6 @@
+set(meca500_driver_SETUP_PY_VERSION "0.0.0")
+set(meca500_driver_SETUP_PY_SCRIPTS "")
+set(meca500_driver_SETUP_PY_PACKAGES "meca500_driver")
+set(meca500_driver_SETUP_PY_PACKAGE_DIRS "src/meca500_driver")
+set(meca500_driver_SETUP_PY_MODULES "")
+set(meca500_driver_SETUP_PY_MODULE_DIRS "")

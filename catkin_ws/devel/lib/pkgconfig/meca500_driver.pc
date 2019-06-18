@@ -1,0 +1,8 @@
+prefix=/home/alexandre/Github/ROS/catkin_ws/devel
+
+Name: meca500_driver
+Description: Description of meca500_driver
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/alexandre/Github/ROS/catkin_ws/devel/lib 
+Requires: roscpp rospy std_msgs
