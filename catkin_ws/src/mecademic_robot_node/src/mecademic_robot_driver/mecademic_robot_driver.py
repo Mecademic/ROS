@@ -102,6 +102,8 @@ class MecademicRobot_Driver():
         while(not self.socket_available):       #wait for socket to be available
             pass
         self.socket_available = False              #Block other processes from using the socket
+        if(self.robot.isInError()):
+            self.robot.ResetError()
         if(state.data):
             reply = self.robot.GripperOpen()
         else:

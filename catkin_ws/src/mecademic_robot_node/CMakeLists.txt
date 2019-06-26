@@ -5,6 +5,8 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  geometry_msgs
+  sensor_msgs
 )
 
 catkin_python_setup()
@@ -14,6 +16,8 @@ catkin_package(
   roscpp
   rospy 
   std_msgs
+  geometry_msgs
+  sensor_msgs
 )
 
 catkin_install_python(PROGRAMS src/mecademic_robot_driver/mecademic_robot_driver.py
