@@ -3,8 +3,7 @@ import rospy
 from geometry_msgs.msg import Pose
 from sensor_msgs.msg import JointState
 from std_msgs.msg import String, Bool, UInt8MultiArray
-from MecademicRobot import RobotController
-from MecademicRobot import RobotFeedback
+from MecademicRobot import RobotController, RobotFeedback
 
 class MecademicRobot_Driver():
     """ROS Mecademic Robot Node Class to make a Node for the Mecademic Robot
@@ -44,6 +43,7 @@ class MecademicRobot_Driver():
         self.socket_available = False              #block socket from being used in other processes
         if(self.robot.isInError()):
             self.robot.ResetError()
+            self.robot.ResumeMotion()
         reply = self.robot.exchangeMsg(command.data, decode=False)
         self.socket_available = True               #Release socket so other processes can use it
         if(reply is not None):
@@ -62,6 +62,7 @@ class MecademicRobot_Driver():
         self.socket_available = False                      #Block other processes from using the socket
         if(self.robot.isInError()):
             self.robot.ResetError()
+            self.robot.ResumeMotion()
         if(len(joints.velocity)>0):
             self.robot.SetJointVel(joints.velocity[0])
         if(len(joints.position)==6):
@@ -85,6 +86,7 @@ class MecademicRobot_Driver():
         self.socket_available = False                  #Block other processes from using the socket while in use
         if(self.robot.isInError()):
             self.robot.ResetError()
+            self.robot.ResumeMotion()
         if(pose.position.z is not None):
             reply = self.robot.MovePose(pose.position.x,pose.position.y,pose.position.z,pose.orientation.x,pose.orientation.y,pose.orientation.z)
         else:
@@ -104,6 +106,7 @@ class MecademicRobot_Driver():
         self.socket_available = False              #Block other processes from using the socket
         if(self.robot.isInError()):
             self.robot.ResetError()
+            self.robot.ResumeMotion()
         if(state.data):
             reply = self.robot.GripperOpen()
         else:
@@ -116,12 +119,13 @@ class MecademicRobot_Driver():
         """Retrieves live position feedback and publishes the data 
         to its corresponding topic. (infinite loop)
         """
-        try:
-            while not rospy.is_shutdown():
+        while not rospy.is_shutdown():
+            try:
                 #Robot Status Feedback
                 if(self.socket_available):
                     self.socket_available = False           #Block other operations from using the socket while in use
-                    robot_status = self.robot.GetStatus()
+                    robot_status = self.robot.GetStatusRobot()
+                    gripper_status = self.robot.GetStatusGripper()
                     self.socket_available = True            #Release the socket so other processes can happen
                     status = UInt8MultiArray()
                     status.data = [
@@ -131,7 +135,12 @@ class MecademicRobot_Driver():
                         robot_status["Error"],
                         robot_status["Paused"],
                         robot_status["EOB"],
-                        robot_status["EOM"]
+                        robot_status["EOM"],
+                        gripper_status["Gripper enabled"],
+                        gripper_status["Homing state"],
+                        gripper_status["Limit reached"],
+                        gripper_status["Error state"],
+                        gripper_status["force overload"]
                     ]
                     self.status_publisher.publish(status)
 
@@ -152,8 +161,8 @@ class MecademicRobot_Driver():
                     pose_fb.orientation.z = feedback.cartesian[5] 
                 self.joint_publisher.publish(joints_fb)
                 self.pose_publisher.publish(pose_fb)
-        except:
-            pass
+            except:
+                pass
     
 if __name__ == "__main__":
     robot = RobotController('192.168.0.100')
