@@ -56,7 +56,7 @@ The topics are used to send and receive data with the ROS middleware to interact
 
 The  _/MecademicRobot_reply_ topic has two different formats. If commands are sent through the _/MecademicRobot_command_ topic, the replies from the robot will be raw and contain the message code and message contents. If any other topic for commands is used, the replies will be published already decoded so only the contents of the message are passed. 
 
-The driver takes detects when it is in error and flag the module when it is. When an error is detected, it will attempt to reset the error before performing the next command. If it is stuck in error mode or encounters a motion error, the robot will need to be inspected by a person and the system rebooted.
+The driver takes detects when it is in error and flag the module when it is. When an error is detected, it will attempt to reset the error before performing the next command. If it is stuck in error mode, the robot will need to be inspected by a person and, possibly, the system rebooted.
 
 The feedback from the joints, pose and status are continuously published to their respective topic as they are acquired from the robot. The joints and pose format have been described in their appropriate control scheme. The status feedback is a UInt8MultiArray message format, which is an array of uint8 values. The representation of every value can be interpreted as a boolean value, 0 for False and True otherwise. The values correspond to the **Activation (robot), Homing (robot), Simulation Mode, Error, Paused, EOB, EOM, Gripper enabled, Homing state (end effector), Limit reached (end effector), Error state (end effector) and force overload (end effector)** respectively.
 

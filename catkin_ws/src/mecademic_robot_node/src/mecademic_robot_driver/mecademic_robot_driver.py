@@ -161,8 +161,8 @@ class MecademicRobot_Driver():
                     pose_fb.orientation.z = feedback.cartesian[5] 
                 self.joint_publisher.publish(joints_fb)
                 self.pose_publisher.publish(pose_fb)
-            except:
-                pass
+            except Exception as error:
+                rospy.logerr(str(error))
     
 if __name__ == "__main__":
     robot = RobotController('192.168.0.100')
