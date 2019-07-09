@@ -1,4 +1,4 @@
-![Mecademic](./docs/logo/mecademic_logo.jpg  "Mecademic")
+![Mecademic](./logo/mecademic_logo.jpg  "Mecademic")
 # Mecademic ROS package
 
 A ROS package that can be built on to create ROS projects that can communicate with the Robot Products from Mecademic. The package can also be taken and placed into your already existing project (the project must be built after including the Mecademic package in order for your project to integrate the new package correctly).
