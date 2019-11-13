@@ -164,6 +164,14 @@ class MecademicRobot_Driver():
             except Exception as error:
                 rospy.logerr(str(error))
     
+    def __del__(self):
+        """Deconstructor for the Mecademic Robot ROS driver
+        Deactivates the robot and closes socket connection with the robot
+        """
+        self.robot.Deactivate()
+        self.robot.Disconnect()
+        self.feedback.Disconnect()
+
 if __name__ == "__main__":
     robot = RobotController('192.168.0.100')
     feedback = RobotFeedback('192.168.0.100')
