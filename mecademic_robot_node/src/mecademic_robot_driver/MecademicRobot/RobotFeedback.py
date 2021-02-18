@@ -84,7 +84,7 @@ class RobotFeedback:
                 raise RuntimeError
             self.socket.settimeout(1)  # 1s
             try:
-                if (self.version_regex[0] <= 7):
+                if self.version_regex[0] <= 7:
                     self.get_data()
                 elif (self.version_regex[
                           0] > 7):  # RobotStatus and GripperStatus are sent on 10001 upon connecting from 8.x firmware
@@ -128,10 +128,10 @@ class RobotFeedback:
                 0]  # Merge the first data with last fragment from previous data stream
             self.last_msg_chunk = raw_response[-1]
             for response in raw_response[:-1]:
-                if (self.version_regex[0] <= 7):
+                if self.version_regex[0] <= 7:
                     self._get_joints(response)
                     self._get_cartesian(response)
-                elif (self.version_regex[0] > 7):
+                elif self.version_regex[0] > 7:
                     self._get_joints(response)
                     self._get_cartesian(response)
                     self._get_joints_vel(response)
@@ -186,8 +186,11 @@ class RobotFeedback:
         """
         code = None
         code = self._get_response_code('JointsPose')
+        # print("!!!!!!!!!!!! {}".format(code))
+        # code = ["2026"]
         for resp_code in code:
             if response.find(resp_code) != -1:
+                resp_code = int(resp_code.replace("[", "").replace("]", ""))
                 self.joints = self._decode_msg(response, resp_code)
 
     def _get_cartesian(self, response):
@@ -202,8 +205,11 @@ class RobotFeedback:
         """
         code = None
         code = self._get_response_code('CartesianPose')
+        # print("!!!!!!!!!!!! {}".format(code))
+        # code = ["2027"]
         for resp_code in code:
             if response.find(resp_code) != -1:
+                resp_code = int(resp_code.replace("[", "").replace("]", ""))
                 self.cartesian = self._decode_msg(response, resp_code)
 
     def _get_joints_vel(self, response):
@@ -218,8 +224,11 @@ class RobotFeedback:
         """
         code = None
         code = self._get_response_code('JointsVel')
+        # print(code)
+        # print(response)
         for resp_code in code:
             if response.find(resp_code) != -1:
+                resp_code = int(resp_code.replace("[", "").replace("]", ""))
                 self.joints_vel = self._decode_msg(response, resp_code)
 
     def _get_torque_ratio(self, response):
@@ -280,14 +289,14 @@ class RobotFeedback:
         elif param.find('GripperStatus') != -1:
             return ['[2079]']
         elif param.find('JointsPose') != -1:
-            if (self.version_regex[0] <= 7):
+            if self.version_regex[0] <= 7:
                 return ['[2102]']
-            elif (self.version_regex[0] > 7):
+            elif self.version_regex[0] > 7:
                 return ['[2026]', '[2210]']
         elif param.find('CartesianPose') != -1:
-            if (self.version_regex[0] <= 7):
+            if self.version_regex[0] <= 7:
                 return ['[2103]']
-            elif (self.version_regex[0] > 7):
+            elif self.version_regex[0] > 7:
                 return ['[2027]', '[2211]']
         elif param.find('JointsVel') != -1:
             return ['[2212]']
@@ -298,7 +307,7 @@ class RobotFeedback:
         else:
             return ['Invalid']
 
-    def _decode_msg(self, response, resp_code):
+    def _decode_msgOld(self, response, resp_code):
         """
 
         Parameters
@@ -314,7 +323,9 @@ class RobotFeedback:
             Message decoded.
 
         """
-        response = response.replace(resp_code + '[', '').replace(']', '')
+        print(response)
+        resp_code, response = response[1:].split("][")
+        response = response.replace("\x00", "")
         params = ()
         if response != '':
             param_str = response.split(',')
@@ -325,3 +336,35 @@ class RobotFeedback:
             else:
                 params = ()
         return params
+
+    def _decode_msg(self, response, response_key):
+        """Decrypt information from the Mecademic Robot response to useful information
+        that can be manipulated.
+
+        Parameters
+        ----------
+        response : string
+            Response from the Mecademic Robot
+        response_key : int
+            Code ID of response to decrypt
+
+        Returns
+        -------
+        code_list_int : list of int
+            Decrypted information
+
+        """
+        # remove delimiters and \x00 bytes
+        code = response.replace('[' + str(response_key) + '][', '').replace(']', '').replace('\x00', '')
+        code_list = code.split(',')  # split packets into their individual selves
+        # if expected packet is from GetJoints (2026) or GetPose (2027), rest of packet is position data
+        if response_key == 2026 or response_key == 2027:
+            code_list_float = tuple((float(x) for x in code_list))  # convert position data to floats
+            return code_list_float
+        elif response_key == 2029 or response_key == 2007 or response_key == 2079:
+            # if expected packet is from GetConf (2029), GetStatusRobot (2007) or GetStatusGripper (2079), rest of
+            # packet is data
+            code_list_int = tuple((int(x) for x in code_list))  # convert status data into integers
+            return code_list_int
+        else:
+            return code  # nothing to decrypt or decryption not specified
