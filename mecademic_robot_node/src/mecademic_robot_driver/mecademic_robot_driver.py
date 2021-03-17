@@ -44,9 +44,10 @@ class MecademicRobot_Driver():
         while not self.socket_available:  # wait for socket to be available
             pass
         self.socket_available = False  # block socket from being used in other processes
-        if self.robot.is_in_error():
-            self.robot.ResetError()
-            self.robot.ResumeMotion()
+        # if self.robot.is_in_error():
+        # FIXME actually fix is_in_error check
+        self.robot.ResetError()
+        self.robot.ResumeMotion()
         reply = self.robot.exchangeMsg(command.data, decode=False)
         self.socket_available = True  # Release socket so other processes can use it
         if reply is not None:
@@ -63,9 +64,10 @@ class MecademicRobot_Driver():
             pass
         reply = None
         self.socket_available = False  # Block other processes from using the socket
-        if self.robot.is_in_error():
-            self.robot.ResetError()
-            self.robot.ResumeMotion()
+        # if self.robot.is_in_error():
+        # FIXME actually fix is_in_error check
+        self.robot.ResetError()
+        self.robot.ResumeMotion()
         if len(joints.velocity) > 0:
             self.robot.SetJointVel(joints.velocity[0])
         if len(joints.position) == 6:
@@ -89,9 +91,10 @@ class MecademicRobot_Driver():
             pass
         reply = None
         self.socket_available = False  # Block other processes from using the socket while in use
-        if self.robot.is_in_error():
-            self.robot.ResetError()
-            self.robot.ResumeMotion()
+        # if self.robot.is_in_error():
+        # FIXME actually fix is_in_error check
+        self.robot.ResetError()
+        self.robot.ResumeMotion()
         if pose.position.z is not None:
             reply = self.robot.MovePose(pose.position.x, pose.position.y, pose.position.z, pose.orientation.x,
                                         pose.orientation.y, pose.orientation.z)
@@ -110,9 +113,10 @@ class MecademicRobot_Driver():
         while not self.socket_available:  # wait for socket to be available
             pass
         self.socket_available = False  # Block other processes from using the socket
-        if self.robot.is_in_error():
-            self.robot.ResetError()
-            self.robot.ResumeMotion()
+        # if self.robot.is_in_error():
+        # FIXME actually fix is_in_error check
+        self.robot.ResetError()
+        self.robot.ResumeMotion()
         if state.data:
             reply = self.robot.GripperOpen()
         else:
