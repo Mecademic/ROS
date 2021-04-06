@@ -39,6 +39,7 @@ class RobotController:
         self.EOM = 1
         self.error = False
         self.queue = False
+        self.connection_occupied = None
 
     def is_in_error(self):
         """Status method that checks whether the Mecademic Robot is in error mode.
@@ -100,6 +101,7 @@ class RobotController:
                 raise RuntimeError
 
             if self._response_contains(response, ['[3001]']):
+                self.connection_occupied = True
                 print(f'Another user is already connected, closing connection.')
             elif self._response_contains(response, ['[3000]']):     # search for key [3000] in the received packet
                 return True
@@ -160,6 +162,8 @@ class RobotController:
 
         """
         if self.socket is None or self.error:               #check that the connection is established or the robot is in error
+            rospy.logerr("Connection broken with robot")
+            raise ConnectionError
             return False                                    #if issues detected, no point in trying to send a cmd that won't reach the robot
         cmd = cmd + '\0'
         status = 0
@@ -171,6 +175,7 @@ class RobotController:
             if status != 0:
                 return True                                 #return true when the message has been sent
                                                             #Message failed to be sent, return false
+        print("failed in sending a message, incorrect response")
         return False
 
     def _receive(self, answer_list, delay=20):
