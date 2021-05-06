@@ -19,8 +19,8 @@ class MecademicRobot_Driver():
         rospy.init_node("MecademicRobot_driver", anonymous=True)
         self.joint_subscriber  = rospy.Subscriber("MecademicRobot_joint", JointState, self.joint_callback)
         self.pose_subscriber   = rospy.Subscriber("MecademicRobot_pose", Pose, self.pose_callback)
-        self.command_subcriber = rospy.Subscriber("MecademicRobot_command", String, self.command_callback)
-        self.gripper_subcriber = rospy.Subscriber("MecademicRobot_gripper", Bool, self.gripper_callback)
+        self.command_subscriber = rospy.Subscriber("MecademicRobot_command", String, self.command_callback)
+        self.gripper_subscriber = rospy.Subscriber("MecademicRobot_gripper", Bool, self.gripper_callback)
         self.reply_publisher   = rospy.Publisher("MecademicRobot_reply", String, queue_size=1)
         self.joint_publisher   = rospy.Publisher("MecademicRobot_joint_fb", JointState, queue_size=1) 
         self.pose_publisher    = rospy.Publisher("MecademicRobot_pose_fb", Pose, queue_size=1)
@@ -41,10 +41,10 @@ class MecademicRobot_Driver():
         while(not self.socket_available):       #wait for socket to be available
             pass
         self.socket_available = False              #block socket from being used in other processes
-        if(self.robot.isInError()):
+        if(self.robot.is_in_error()):
             self.robot.ResetError()
             self.robot.ResumeMotion()
-        reply = self.robot.exchangeMsg(command.data, decode=False)
+        reply = self.robot.exchange_msg(command.data, decode=False)
         self.socket_available = True               #Release socket so other processes can use it
         if(reply is not None):
             self.reply_publisher.publish(reply)
@@ -60,7 +60,7 @@ class MecademicRobot_Driver():
             pass
         reply = None
         self.socket_available = False                      #Block other processes from using the socket
-        if(self.robot.isInError()):
+        if(self.robot.is_in_error()):
             self.robot.ResetError()
             self.robot.ResumeMotion()
         if(len(joints.velocity)>0):
@@ -84,7 +84,7 @@ class MecademicRobot_Driver():
             pass
         reply = None
         self.socket_available = False                  #Block other processes from using the socket while in use
-        if(self.robot.isInError()):
+        if(self.robot.is_in_error()):
             self.robot.ResetError()
             self.robot.ResumeMotion()
         if(pose.position.z is not None):
@@ -104,7 +104,7 @@ class MecademicRobot_Driver():
         while(not self.socket_available):       #wait for socket to be available
             pass
         self.socket_available = False              #Block other processes from using the socket
-        if(self.robot.isInError()):
+        if(self.robot.is_in_error()):
             self.robot.ResetError()
             self.robot.ResumeMotion()
         if(state.data):
@@ -145,7 +145,7 @@ class MecademicRobot_Driver():
                     self.status_publisher.publish(status)
 
                 #Position Feedback
-                self.feedback.getData()
+                self.feedback.get_data()
                 joints_fb = JointState()
                 joints_fb.position = feedback.joints
                 pose_fb = Pose()
@@ -168,16 +168,16 @@ class MecademicRobot_Driver():
         """Deconstructor for the Mecademic Robot ROS driver
         Deactivates the robot and closes socket connection with the robot
         """
-        self.robot.Deactivate()
-        self.robot.Disconnect()
-        self.feedback.Disconnect()
+        self.robot.DeactivateRobot()
+        self.robot.disconnect()
+        self.feedback.disconnect()
 
 if __name__ == "__main__":
     robot = RobotController('192.168.0.100')
-    feedback = RobotFeedback('192.168.0.100')
-    robot.Connect()
-    feedback.Connect()
-    robot.Activate()
-    robot.Home()
+    feedback = RobotFeedback('192.168.0.100', "v8.1.6.141")
+    robot.connect()
+    feedback.connect()
+    robot.ActivateRobot()
+    robot.home()
     driver = MecademicRobot_Driver(robot, feedback)
     rospy.spin()
