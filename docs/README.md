@@ -1,6 +1,8 @@
 ![Mecademic](./logo/mecademic_logo.jpg  "Mecademic")
 # Mecademic ROS package
 
+NOTE: **This package uses an old version of the Python driver and is no longer supported. We currently do not have a ROS package that is being actively developed and tested**
+
 A ROS package that can be built on to create ROS projects that can communicate with the Robot Products from Mecademic. The package can also be taken and placed into your already existing project (the project must be built after including the Mecademic package in order for your project to integrate the new package correctly).
 
 #### Supported Robots
