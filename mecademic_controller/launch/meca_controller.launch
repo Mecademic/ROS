@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<launch>
+<node name="geomagic2meca500" pkg="mecademic_controller" type="geomagic2meca500kdl.py" output="screen">
+</node>
+</launch>

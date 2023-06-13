@@ -1,0 +1,19 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "",
+        "limitSymbolsToIncludedHeaders": true
+      },
+      "includePath": [
+        "/home/tomas/telebot_ws/devel/include/**",
+        "/opt/ros/noetic/include/**",
+        "/home/tomas/telebot_ws/src/kuka_experimental/kuka_eki_hw_interface/include/**",
+        "/home/tomas/telebot_ws/src/kuka_experimental/kuka_rsi_hw_interface/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS"
+    }
+  ],
+  "version": 4
+}

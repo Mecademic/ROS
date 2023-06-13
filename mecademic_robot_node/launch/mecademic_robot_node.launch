@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<launch>
+	<node pkg="mecademic_robot_node" name="mecademic_robot_driver" type="mecademic_robot_driver.py" output="screen"/>
+
+</launch>

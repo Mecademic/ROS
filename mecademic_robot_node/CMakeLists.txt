@@ -20,7 +20,9 @@ catkin_package(
   sensor_msgs
 )
 
-catkin_install_python(PROGRAMS src/mecademic_robot_driver/mecademic_robot_driver.py
+catkin_install_python(PROGRAMS src/mecademic_robot_driver/mecademic_robot_driver.py 
+                               src/mecademic_robot_driver/MecademicRobot/RobotController.py 
+                               src/mecademic_robot_driver/MecademicRobot/RobotFeedback.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
 
